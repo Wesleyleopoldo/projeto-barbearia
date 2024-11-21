@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model BarberShop {
+  id        Int    @id @default(autoincrement())
+  name      String
+  barberId  Int
+
+  hours DateTime @default(now())
+
+  barber Barber @relation(fields: [barberId], references: [id])
+}
+
+
+model Barber {
+
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  email       String
+  password    String
+
+}
+
+
+model Client {
+
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String   @unique
+  password  String   // Senha criptografada
+
+}
+
+model Appointment {
+  id          Int      @id @default(autoincrement())
+  clientId    Int      // Relacionamento com o cliente
+  barberShopId Int     // Relacionamento com a barbearia
+  appointmentDate DateTime // Data e hora do agendamento
+  status      String   // Status do agendamento (ex: "confirmado", "cancelado", "em andamento")
+
+  // Relacionamento com o cliente
+  client      Client   @relation(fields: [clientId], references: [id])
+
+  // Relacionamento com a barbearia
+  barberShop  BarberShop @relation(fields: [barberShopId], references: [id])
+}
